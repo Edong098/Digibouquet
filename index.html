@@ -21,8 +21,8 @@ textarea#note{padding-top:0;border:1px solid #e2dcec;min-height:192px}.recipient
 label[for="from"],#displayfrom{font-weight:700}
 #play{margin-top:20px}
 
-.opening-shower{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:20}.falling-petal{position:absolute;top:-60px;left:var(--left);font-size:var(--size);line-height:1;opacity:0;will-change:transform,opacity;animation:petal-fall var(--duration) linear var(--delay) forwards;filter:drop-shadow(0 3px 4px #8b639d20)}
-@keyframes petal-fall{0%{transform:translate3d(0,-60px,0) rotate(0deg);opacity:0}10%{opacity:.85}85%{opacity:.75}100%{transform:translate3d(var(--drift),calc(100svh + 120px),0) rotate(var(--spin));opacity:0}}
+.opening-shower{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1000}.falling-petal{position:absolute;top:-60px;left:var(--left);font-size:var(--size);line-height:1;opacity:0;will-change:transform,opacity;animation:petal-fall var(--duration) linear var(--delay) forwards;filter:drop-shadow(0 3px 4px #8b639d20)}
+@keyframes petal-fall{0%{transform:translate3d(0,-60px,0) rotate(0deg);opacity:0}10%{opacity:1}85%{opacity:.95}100%{transform:translate3d(var(--drift),calc(100svh + 120px),0) rotate(var(--spin));opacity:0}}
 @media(prefers-reduced-motion:reduce){.opening-shower{display:none}}
 </style>
 </head>
@@ -56,13 +56,14 @@ $('share').onclick=async()=>{if(!navigator.share){$('copy').click();return}try{a
 function playSong(){if(!video)return;const f=document.createElement('iframe');f.src='https://www.youtube-nocookie.com/embed/'+video+'?autoplay=1&playsinline=1';f.title='Lagu untukmu';f.allow='autoplay; encrypted-media; picture-in-picture';f.allowFullscreen=true;f.referrerPolicy='strict-origin-when-cross-origin';$('player').replaceChildren(f);$('play').hidden=false}
 $('play').onclick=playSong;
 function route(){if(location.hash.startsWith('#gift=')){try{const d=decode(location.hash.slice(6));render(d);document.body.classList.add('recipient');if(video)playSong()}catch{document.body.classList.remove('recipient');$('player').replaceChildren();$('status').textContent='Tautan hadiah tidak valid atau rusak. Kamu bisa membuat hadiah baru.'}}else{document.body.classList.remove('recipient');$('player').replaceChildren();render(data())}}
-window.addEventListener('hashchange',route);route();
+window.addEventListener('hashchange',()=>{route();openingShower()});route();
 function openingShower(){
  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ document.querySelector('.opening-shower')?.remove();
  const layer=document.createElement('div');layer.className='opening-shower';layer.setAttribute('aria-hidden','true');
- const symbols=['💕','🌸','💗','🌷','🌸','🤍'];const count=window.innerWidth<600?18:28;
- for(let i=0;i<count;i++){const petal=document.createElement('span');petal.className='falling-petal';petal.textContent=symbols[i%symbols.length];petal.style.setProperty('--left',((i+.5)/count*100)+'%');petal.style.setProperty('--size',(18+Math.random()*15)+'px');petal.style.setProperty('--duration',(4+Math.random()*2)+'s');petal.style.setProperty('--delay',(Math.random()*2)+'s');petal.style.setProperty('--drift',(Math.random()*100-50)+'px');petal.style.setProperty('--spin',(Math.random()*240-120)+'deg');layer.appendChild(petal)}
- document.body.appendChild(layer);setTimeout(()=>layer.remove(),8500);
+ const symbols=['💕','🌸','💗','🌷','🌸','🤍'];const count=window.innerWidth<600?28:44;
+ for(let i=0;i<count;i++){const petal=document.createElement('span');petal.className='falling-petal';petal.textContent=symbols[i%symbols.length];petal.style.setProperty('--left',((i+.5)/count*100)+'%');petal.style.setProperty('--size',(26+Math.random()*16)+'px');petal.style.setProperty('--duration',(6+Math.random()*3)+'s');petal.style.setProperty('--delay',(i<6?-1.5:Math.random()*6)+'s');petal.style.setProperty('--drift',(Math.random()*100-50)+'px');petal.style.setProperty('--spin',(Math.random()*240-120)+'deg');layer.appendChild(petal)}
+ document.body.appendChild(layer);setTimeout(()=>layer.remove(),16000);
 }
 openingShower();
 </script></body></html>
